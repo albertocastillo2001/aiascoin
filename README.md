@@ -20,12 +20,12 @@ Donations for the creation and maintenance of this script are welcome at:
 &nbsp;
 
 click2install (original author):
-AIAS: AJvfhEfJX5wvhxU4XoHGiFsCbyF1Cnuydq
-BTC: 1DJdhFp6CiVZSBSsXcecp1FnuHXDcsYQPu
+- AIAS: AJvfhEfJX5wvhxU4XoHGiFsCbyF1Cnuydq
+- BTC: 1DJdhFp6CiVZSBSsXcecp1FnuHXDcsYQPu
 
 alb2001 (updated version author)
-AIAS: AJFBkUrqHsu8qwQidYLAjS8j5xMnTa6QYB
-BTC: bc1quzhc4r0quk35qp4r5qrle553zvge7s3zz84enn
+- AIAS: AJFBkUrqHsu8qwQidYLAjS8j5xMnTa6QYB
+- BTC: bc1quzhc4r0quk35qp4r5qrle553zvge7s3zz84enn
 &nbsp;
 
 ## How to setup your masternode with this script and a cold wallet on your PC
