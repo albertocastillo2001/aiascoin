@@ -2,7 +2,8 @@
 
 TMP_FOLDER=$(mktemp -d) 
 
-DAEMON_ARCHIVE=${1:-"http://95.179.140.202/files"}
+DAEMON_ARCHIVE_URL=${1:-"https://github.com/AIAScoinTechnologies/aiascoin/releases/download/1.2.9/aias129-linux-x86_64.zip"}
+BLOCKCHAIN_SNAPSHOT_URL=${1:-"http://www.mediafire.com/file/srkv8iobp17fxxh/blockchain.zip/file"}
 ARCHIVE_STRIP=""
 DEFAULT_PORT=10721
 
@@ -10,13 +11,14 @@ COIN_NAME="aias"
 CONFIG_FILE="${COIN_NAME}.conf"
 DEFAULT_USER_NAME="${COIN_NAME}-mn1"
 DAEMON_FILE="${COIN_NAME}d"
-CLI_FILE="${COIN_NAME}-cli" 
+CLI_FILE="${COIN_NAME}-cli"
 
 BINARIES_PATH=/usr/local/bin
 DAEMON_PATH="${BINARIES_PATH}/${DAEMON_FILE}"
 CLI_PATH="${BINARIES_PATH}/${CLI_FILE}"
 
-DONATION_ADDRESS="AJvfhEfJX5wvhxU4XoHGiFsCbyF1Cnuydq"
+DONATION_ADDRESS_CLICK2INSTALL="AJvfhEfJX5wvhxU4XoHGiFsCbyF1Cnuydq"
+DONATION_ADDRESS_ALB2001="AJFBkUrqHsu8qwQidYLAjS8j5xMnTa6QYB"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -25,8 +27,8 @@ NC='\033[0m'
 
 function checks() 
 {
-  if [[ $(lsb_release -d) != *16.04* ]]; then
-    echo -e " ${RED}You are not running Ubuntu 16.04. Installation is cancelled.${NC}"
+  if [[ $(lsb_release -d) != *16.04* ]] || [[ $(lsb_release -d) != *18.04* ]]; then
+    echo -e " ${RED}You are not running Ubuntu 16.04 or 18.04. Installation is cancelled.${NC}"
     exit 1
   fi
 
@@ -96,9 +98,11 @@ function prepare_system()
     libgmp3-dev \
     libminiupnpc-dev \
     libssl-dev \
-    libtool autoconf \
+    libtool \
+    autoconf \
     libzmq5 \
     make \
+    net-tools \
     pkg-config \
     pwgen \
     software-properties-common \
@@ -118,9 +122,10 @@ function deploy_binary()
 
     local archive=${COIN_NAME}.tar.gz
     echo -e " ${GREEN}Downloading binaries and deploying the ${COIN_NAME} service.${NC}"
-    
-    wget http://95.179.140.202/files/aiasd -O ${DAEMON_PATH}
-    wget http://95.179.140.202/files/aias-cli -O ${CLI_PATH}
+    local daemon_archive=$(echo ${DAEMON_ARCHIVE_URL} | awk -F "/" '{print $(NF-0)}')
+
+    wget ${DAEMON_ARCHIVE_URL}
+    unzip ${daemon_archive} ${DAEMON_FILE} ${CLI_FILE} -d ${BINARIES_PATH}
 
     chmod +x ${DAEMON_PATH} >/dev/null 2>&1
     chmod +x ${CLI_PATH} >/dev/null 2>&1
@@ -205,8 +210,8 @@ function ask_user()
   read -e -p "$(echo -e $YELLOW Enter a new username to run the ${COIN_NAME} service as: $NC)" -i ${DEFAULT_USER_NAME} USER_NAME
 
   if [ -z "$(getent passwd ${USER_NAME})" ]; then
-    useradd -m ${USER_NAME}
-    local USERPASS=$(pwgen -s 12 1)
+    useradd -m -s "/bin/bash" ${USER_NAME}
+    USERPASS=$(pwgen -s 12 1)
     echo "${USER_NAME}:${USERPASS}" | chpasswd
 
     local home=$(sudo -H -u ${USER_NAME} bash -c 'echo ${HOME}')
@@ -284,6 +289,40 @@ addnode=144.202.106.212
 addnode=85.214.41.24
 addnode=45.32.76.59
 addnode=188.166.90.4
+addnode=134.175.134.231:10721
+addnode=147.156.56.160:10721
+addnode=147.156.56.82:10721
+addnode=147.156.56.85:10721
+addnode=147.156.56.92:10721
+addnode=148.70.227.161:10721
+addnode=164.68.96.138:10721
+addnode=167.114.242.254:10721
+addnode=167.86.115.101:42382
+addnode=173.208.132.186:47224
+addnode=188.26.150.143:33463
+addnode=195.46.0.106:10721
+addnode=207.180.213.90:10721
+addnode=207.180.244.169:33340
+addnode=207.180.244.169:35234
+addnode=207.180.244.169:40054
+addnode=207.180.244.169:46378
+addnode=207.180.244.169:53044
+addnode=207.180.244.169:53506
+addnode=207.180.244.169:60784
+addnode=217.182.89.228:10721
+addnode=217.61.124.18:10721
+addnode=37.46.245.76:10721
+addnode=46.105.34.58:10721
+addnode=51.83.108.207:10721
+addnode=72.136.83.151:41850
+addnode=80.211.94.150:10721
+addnode=80.241.214.129:10721
+addnode=89.38.149.17:40348
+addnode=89.38.149.17:46668
+addnode=89.38.149.17:56010
+addnode=89.38.149.17:60510
+addnode=94.177.235.252:10721
+addnode=95.179.140.202:10721
 listen=1
 server=1
 daemon=1
@@ -319,9 +358,39 @@ function get_key()
   fi
 }
 
+function download_blockchain()
+{
+  local blockchain_file="blockchain.zip"
+  if [[ ! -f ${blockchain_file} ]];
+  then
+    read -e -p "$(echo -e ${YELLOW} Do you want to download the blockchain snapshot? [Y/N] ${NC})" CHOICE
+    if [[ ("${CHOICE}" == "y" || "${CHOICE}" == "Y") ]]; then
+      echo -e "${GREEN}  Downloading blockchain snapshot${NC}"
+      wget ${BLOCKCHAIN_SNAPSHOT_URL} -O ${blockchain_file}
+      install_blockchain
+    fi
+  else
+    echo -e "${GREEN}  Blockchain snapshot found${NC}"
+    install_blockchain
+  fi
+}
+
+function install_blockchain()
+{
+  if [[ -f ${blockchain_file} ]];
+  then
+    echo -e "${GREEN}  Installing blockchain snapshot${NC}"
+    rm -rf "${HOME_FOLDER}/blocks" "${HOME_FOLDER}/chainstate" "${HOME_FOLDER}/sporks" "${HOME_FOLDER}/zerocoin"
+    unzip -o ${blockchain_file} -d ${HOME_FOLDER}/
+    chown -R ${USER_NAME}: ${HOME_FOLDER} >/dev/null 2>&1
+  else
+    echo -e "${RED}  Error installing blockchain snapshot${NC}"
+  fi
+}
+
 function create_key() 
 {
-  read -e -p "$(echo -e ${YELLOW} Paste your masternode private key and press ENTER or leave it blank to generate a new private key.${NC})" PRIVKEY
+  read -e -p "$(echo -e ${YELLOW} Paste your masternode private key and press ENTER or leave it blank to generate a new private key. ${NC})" PRIVKEY
 
   if [[ -z "${PRIVKEY}" ]]; 
   then
@@ -392,7 +461,7 @@ function show_output()
  echo -e "  - rotate your ${GREEN}${LOG_FILE}${NC} file once per week and keep the last 4 weeks of logs."
  echo
  echo -e " You can find the masternode status when logged in as ${USER_NAME} using the command below:"
- echo -e "  - ${GREEN}${CLI_FILE} getinfo${NC} to retreive your nodes status and information"
+ echo -e "  - ${GREEN}${CLI_FILE} getinfo${NC} to retrieve your nodes status and information"
  echo
  echo -e "   if you are not logged in as ${GREEN}${USER_NAME}${NC} then you can run ${YELLOW}su - ${USER_NAME}${NC} to switch to that user before"
  echo -e "   running the ${GREEN}${CLI_FILE} getinfo${NC} command."
@@ -413,6 +482,7 @@ function setup_node()
   ask_ip
   create_config
   create_key
+  download_blockchain
   update_config
   enable_firewall
   add_daemon_service
@@ -447,12 +517,17 @@ echo
 echo -e " You will see ${YELLOW}questions${NC}, ${GREEN}information${NC} and ${RED}errors${NC}. A summary of what has been done will be shown at the end."
 echo
 echo -e " The files will be downloaded and installed from:"
-echo -e " ${GREEN}${DAEMON_ARCHIVE}${NC}"
+echo -e " ${GREEN}${DAEMON_ARCHIVE_URL}${NC}"
 echo
 echo -e " Script created by click2install"
 echo -e "  - GitHub: https://github.com/click2install"
 echo -e "  - Discord: click2install#0001"
-echo -e "  - ${COIN_NAME}: ${DONATION_ADDRESS}"
+echo -e "  - ${COIN_NAME}: ${DONATION_ADDRESS_CLICK2INSTALL}"
+echo
+echo -e " Script updated by alb2001"
+echo -e "  - GitHub: https://github.com/albertocastillo2001"
+echo -e "  - Discord: alb2001#2529"
+echo -e "  - ${COIN_NAME}: ${DONATION_ADDRESS_ALB2001}"
 echo -e "${GREEN}"
 echo -e "============================================================================================================="              
 echo -e "${NC}"

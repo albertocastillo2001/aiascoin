@@ -1,25 +1,31 @@
 # AIAS Coin
 
-Shell script to install a `AIAS Coin Masternode` on a Linux server running Ubuntu 16.04. Supports IPv4, IPv6 and multiple nodes on a single VPS.
+Shell script to install a `AIAS Coin Masternode` on a Linux server running Ubuntu 16.04 and 18.04. Supports IPv4, IPv6 and multiple nodes on a single VPS.
 
 
 ## Installation
 To start the installation, login as `root` to your VPS and run the two commands listed below. Note that the masternode does not run as root but as a user that the script will create. The script, however, needs to run as root so your VPS can be configured correctly.
 
 ```
-wget -q https://github.com/click2install/aiascoin/raw/master/install-aias.sh  
+wget -q https://github.com/albertocastillo2001/aiascoin/raw/master/install-aias.sh  
 bash install-aias.sh
 ```
 This script is intended to be used on a clean server, or a server that has used this script to install 1 or more previous nodes. 
 
 This script will work alongside masternodes that were installed by other means provided the masternode binaries `aiasd` and `aias-cli` are installed to `/usr/local/bin`.
 
+This updated version will also allow you to download a copy of the existing blockchain, which will be updated regularly to help you start up nodes faster.
+
 Donations for the creation and maintenance of this script are welcome at:
 &nbsp;
 
+click2install (original author):
 AIAS: AJvfhEfJX5wvhxU4XoHGiFsCbyF1Cnuydq
 BTC: 1DJdhFp6CiVZSBSsXcecp1FnuHXDcsYQPu
 
+alb2001 (updated version author)
+AIAS: AJFBkUrqHsu8qwQidYLAjS8j5xMnTa6QYB
+BTC: bc1quzhc4r0quk35qp4r5qrle553zvge7s3zz84enn
 &nbsp;
 
 ## How to setup your masternode with this script and a cold wallet on your PC
@@ -28,15 +34,15 @@ If you need to purchase a VPS you can get [one here from Vultr](https://www.vult
 
 The steps involved are:
 
- 1. Run the masternode installation script as per the [instructions above](https://github.com/click2install/aiascoin#installation).
+ 1. Run the masternode installation script as per the [instructions above](https://github.com/albertocastillo2001/aiascoin#installation).
  2. When you are finished this process you will get some information on what has been done as well as some important information you will need for your cold wallet setup.
  3. **Copy/paste the output of this script into a text file and keep it safe.**
 
 You are now ready to configure your local wallet and finish the masternode setup
 
- 1. Make sure you have downloaded the latest wallet from http://95.179.140.202/files
+ 1. Make sure you have downloaded the latest wallet from https://github.com/AIAScoinTechnologies/aiascoin/releases
  2. Install the wallet on your local PC
- 3. Start the wallet and let if completely synchronize to the network - this will take some time
+ 3. Start the wallet and let if completely synchronize to the network - this will take some time. If the blockchain has been downloaded, the synchronization will be faster
  4. Create a new `Receiving Address` from the wallets `File` menu and name it appropriately, e.g. MN-1
  5. Unlock your wallet and send **exactly 1,000 AIAS** to the address created in step #4
  6. Wait for the transaction from step #5 to be fully confirmed. Look for a tick in the first column in your transactions tab
@@ -66,13 +72,18 @@ At this stage the script auto detects the IP addresses of the server, if there i
 
 If you do setup multiple masternodes on a single VPS, make sure the VPS is capable of running more than one masternode or your masternode rewards will suffer. **You have been warned.**
 
-Once you have setup the 2nd or more masternodes, use the output of the script for each masternode and follow the [steps above](https://github.com/click2install/aiascoin#how-to-setup-your-masternode-with-this-script-and-a-cold-wallet-on-your-pc) in your wallet, where each new masternode is a new line in your `masternode.conf` file. **NOTE:** All the port numbers in your masternode.conf file will be 10721 or the wallet will not re-start after you save the config file.
+Once you have setup the 2nd or more masternodes, use the output of the script for each masternode and follow the [steps above](https://github.com/albertocastillo2001/aiascoin#how-to-setup-your-masternode-with-this-script-and-a-cold-wallet-on-your-pc) in your wallet, where each new masternode is a new line in your `masternode.conf` file. **NOTE:** All the port numbers in your masternode.conf file will be 10721 or the wallet will not re-start after you save the config file.
 
 Note that multiple masternodes use only one instance of the `aiasd` and `aias-cli` binary files located in `/usr/local/bin` and they each have their own configuration located in `/home/<username>/.aiascore` folder.
 
 &nbsp;
 
 ## Bootstrapping from an existing node
+
+This new version of the script allows you to use an existing copy of the blockchain.
+When setting up a node, you can decide if you want to download a copy of the blockchain snapshot. If you do so, a file will be placed on the same directory where the script is located called `blockchain.zip`. From now on, this script will be used to bootstrap any new node you create on the same server.
+
+In case you have trouble with this method, you can use the old method indicated below:
 If you have an existing node running on the same VPS and you want to bootstrap your new node from the existing one so you dont have to wait for it to sync the blockchain you can run the following commands (as root) one at a time after the script finishes:
 ```
 systemctl stop <new node username>.service
@@ -91,7 +102,7 @@ cd ~
 ## Running the script
 When you run the script it will tell you what it will do on your system. Once completed there is a summary of the information you need to be aware of regarding your node setup which you can copy/paste to your local PC. **Make sure you keep this information safe for later.**
 
-If you want to run the script before setting up the node in your cold wallet the script will generate a priv key for you to use, otherwise you can supply the privkey during the script execution by pasting it into the SSH shel [right click for paste] when asked.
+If you want to run the script before setting up the node in your cold wallet the script will generate a priv key for you to use, otherwise you can supply the privkey during the script execution by pasting it into the SSH shell [right click for paste] when asked.
 
 &nbsp;
 
