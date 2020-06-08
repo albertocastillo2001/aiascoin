@@ -81,7 +81,7 @@ Note that multiple masternodes use only one instance of the `aiasd` and `aias-cl
 ## Bootstrapping from an existing node
 
 This new version of the script allows you to use an existing copy of the blockchain.
-When setting up a node, you can decide if you want to download a copy of the blockchain snapshot. If you do so, a file will be placed on the same directory where the script is located called `blockchain.zip`. From now on, this script will be used to bootstrap any new node you create on the same server.
+When setting up a node, you can decide if you want to download a copy of the blockchain snapshot. If you do so, a file will be placed on the same directory where the script is located called `blockchain.zip`. From now on, this snapshot will be used to bootstrap any new node you create on the same server.
 
 In case you have trouble with this method, you can use the old method indicated below:
 If you have an existing node running on the same VPS and you want to bootstrap your new node from the existing one so you dont have to wait for it to sync the blockchain you can run the following commands (as root) one at a time after the script finishes:
