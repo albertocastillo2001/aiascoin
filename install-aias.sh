@@ -3,7 +3,7 @@
 TMP_FOLDER=$(mktemp -d) 
 
 DAEMON_ARCHIVE_URL=${1:-"https://github.com/AIAScoinTechnologies/aiascoin/releases/download/1.2.9/aias129-linux-x86_64.zip"}
-BLOCKCHAIN_SNAPSHOT_URL=${1:-"http://www.mediafire.com/file/srkv8iobp17fxxh/blockchain.zip/file"}
+BLOCKCHAIN_SNAPSHOT_URL=${1:-"https://github.com/AIAScoinTechnologies/bootstrap/releases/download/v1.0/blockchain.zip"}
 ARCHIVE_STRIP=""
 DEFAULT_PORT=10721
 
