@@ -7,7 +7,7 @@ Shell script to install a `AIAS Coin Masternode` on a Linux server running Ubunt
 To start the installation, login as `root` to your VPS and run the two commands listed below. Note that the masternode does not run as root but as a user that the script will create. The script, however, needs to run as root so your VPS can be configured correctly.
 
 ```
-wget -q https://github.com/albertocastillo2001/aiascoin/raw/master/install-aias.sh  
+wget -q https://github.com/albertocastillo2001/aiascoin/raw/master/install-aias.sh
 bash install-aias.sh
 ```
 This script is intended to be used on a clean server, or a server that has used this script to install 1 or more previous nodes. 
